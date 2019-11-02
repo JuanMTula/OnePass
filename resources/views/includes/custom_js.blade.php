@@ -43,18 +43,6 @@
 
 // funciones
 
-    function checkRecaptcha() {
-      var response = grecaptcha.getResponse();
-      if(response.length == 0) { 
-        //reCaptcha not verified
-        alert("no pass"); 
-      }
-      else { 
-        //reCaptch verified
-        alert("pass"); 
-      }
-    }
-    
     function cerrarsesion(){
   
         
@@ -68,12 +56,7 @@
             
             if(response.data.valido == 1){
           
-           /* $('#MailPw').show();  
-            $('#login-mail').val("");
-            $('#login-password').val("");
-            
-            $('#Contenido').hide();  
-            $('#Contenido').empty(); */
+            $('body').hide();  
 
             location.reload();
             
@@ -636,16 +619,32 @@
 
     function enterlogin(){
         
-         $('#login-mail').keypress(function(e) {
-        if(e.which == 13) {
-            $('#enterkeylogin').click();
-        }
+        $('#login-mail').keypress(function(e) {
+        
+            if(e.which == 13) {
+            
+                if($('#login-password').val() == "") {
+                    $('#login-password').focus();
+                    return;
+                };
+                
+                $('#enterkeylogin').click();
+                
+            }
         });
         
          $('#login-password').keypress(function(e) {
-        if(e.which == 13) {
-            $('#enterkeylogin').click();
-        }
+        
+            if(e.which == 13) {
+                
+                if($('#login-mail').val() == "") {
+                    $('#login-mail').focus();
+                    return;
+                };
+        
+                $('#enterkeylogin').click();
+            }
+            
         });
    
     

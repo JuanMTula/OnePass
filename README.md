@@ -28,3 +28,10 @@ Html - Css - Js <br>
 ## Limites de aplicacion
 
 Aplicacion sin fines de lucro, no apto para uso profesional, y de libre distribucion.
+
+## Instalacion
+
+Copiar archivo .env.example a .env y llenar la configuracion
+Crear llave unica de aplicacion -> "php artisan key:generate"
+Migrar la base de datos -> "php artisan migrate"
+Establecer una llave recaptcha de google en archivo .env -> https://www.google.com/recaptcha/intro/v3.html

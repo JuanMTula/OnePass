@@ -13,6 +13,7 @@
       
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       
+      <meta name="title" content="OnePass">
       <meta name="description" content="Password keeper">
       <meta name="author" content="Juan Manuel Tula">
       <meta name="company" content="MadMoss">
