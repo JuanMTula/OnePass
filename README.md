@@ -18,12 +18,14 @@ Laravel (PHP/MySql) - https://laravel.com <br>
 Php - https://www.php.net <br>
 MySql - https://www.mysql.com <br>
 Jquery - https://jquery.com <br>
+Vue - https://es.vuejs.org/ <br>
+Vue Route - https://router.vuejs.org/ <br>
+Shoelace - https://shoelace.style/ <br>
 Materialize - https://materializecss.com <br>
 Select2 - https://select2.org <br>
 SweetAlert2 - https://sweetalert2.github.io <br>
 Axios - https://github.com/axios/axios <br>
-Google recaptcha v3 - https://www.google.com/recaptcha/intro/v3.html <br>
-Html - Css - Js <br>
+
 
 ## Limites de aplicacion
 

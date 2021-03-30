@@ -1,36 +1,28 @@
 <?php
 
-// Home Page
-
-
-
-    Route::get('/requerimientos', 'LoginController@requerimientos')->name('requerimientos');
-
-// Home & Login
-
+    // Home
     Route::get('/', 'LoginController@home')->name('home');
-    Route::get('/newregist', 'LoginController@newregist')->name('newregist');
+
+    // Registro
+    Route::post('/nuevoUsuario', 'LoginController@nuevoUsuario')->name('nuevoUsuario');
     Route::get('/login', 'LoginController@login')->name('login');
     Route::get('/logout', 'LoginController@logout')->name('logout');
-    Route::get('/checkSession', 'LoginController@checkSession')->name('checkSession');
+
 
     Route::group(['middleware' => ['isLoggued']], function () {
 
-        // Content
-        Route::get('/categorias', 'contentController@categorias')->name('categorias');
-        Route::post('/modificarcategoria', 'contentController@modificarcategoria')->name('modificarcategoria');
-        Route::post('/crearcategoria', 'contentController@crearcategoria')->name('crearcategoria');
-        Route::post('/borrarcategoria', 'contentController@borrarcategoria')->name('borrarcategoria');
+        // Landing
+        Route::get('/lista', 'categoriasController@listaConClaves')->name('lista');
 
-        Route::post('/modificarclave', 'contentController@modificarclave')->name('modificarclave');
-        Route::post('/borrarclave', 'contentController@borrarclave')->name('borrarclave');
-        Route::post('/crearclave', 'contentController@crearclave')->name('crearclave');
-
-
+        // Categorias
+        Route::post('/categorias/modificar', 'categoriasController@modificar')->name('modificarCategoria');
+        Route::post('/categorias/crear', 'categoriasController@crear')->name('crearCategoria');
+        Route::post('/categorias/borrar', 'categoriasController@borrar')->name('borrarCategoria');
 
         // Claves
-        Route::get('/getcontentclaves', 'contentController@getcontentclaves')->name('getcontentclaves');
-        Route::get('/modifcontentclaves', 'contentController@modifcontentclaves')->name('modifcontentclaves');
+        Route::post('/claves/modificar', 'clavesController@modificar')->name('modificarClave');
+        Route::post('/claves/borrar', 'clavesController@borrar')->name('borrarClave');
+        Route::post('/claves/crear', 'clavesController@crear')->name('crearClave');
 
     });
 

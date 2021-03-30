@@ -38,7 +38,7 @@ class content extends Model
     public function claves()
     {
         return $this->hasMany('App\claves', 'claves_contid','categoria_id')
-            ->select(['claves_id', 'claves_contid','claves_titulo', 'claves_texto', 'claves_tipo', 'claves_url', 'claves_tel', 'claves_cuenta', 'claves_clave']);
+            ->select(['claves_id', 'claves_contid','claves_titulo', 'claves_texto', 'claves_tipo',  'claves_color', 'claves_url', 'claves_tel', 'claves_cuenta', 'claves_clave']);
     }
 
 }

@@ -2,25 +2,27 @@
 
     const siteRoutes = {
 
-        'home'      :  "{{route('home')}}",
-        'login'     :  "{{route('login')}}",
-        'logout'    :  "{{route('logout')}}",
-        'categorias':  "{{route('categorias')}}",
-        'modificarcategoria':  "{{route('modificarcategoria')}}",
-        'crearcategoria':  "{{route('crearcategoria')}}",
-        'borrarcategoria':  "{{route('borrarcategoria')}}",
-        'modificarclave':  "{{route('modificarclave')}}",
-        'borrarclave':  "{{route('borrarclave')}}",
-        'crearclave':  "{{route('crearclave')}}",
+        'home'          :  "{{route('home')}}",
+        'login'         :  "{{route('login')}}",
+        'logout'        :  "{{route('logout')}}",
+        'nuevoUsuario'  :  "{{route('nuevoUsuario')}}",
 
+        'lista' :  "{{route('lista')}}",
+
+        'modificarCategoria':  "{{route('modificarCategoria')}}",
+        'crearCategoria'    :  "{{route('crearCategoria')}}",
+        'borrarCategoria'   :  "{{route('borrarCategoria')}}",
+
+        'modificarClave' : "{{route('modificarClave')}}",
+        'borrarClave'    : "{{route('borrarClave')}}",
+        'crearClave'     : "{{route('crearClave')}}",
 
     };
 
     const siteInvitado = {
-        'usuario' : 'juan@juan.com',
-        'clave'   : '123',
-
-    }
+        'usuario' : 'demo@demo.com',
+        'clave'   : 'demo',
+    };
 
 
 </script>

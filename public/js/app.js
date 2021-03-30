@@ -6356,6 +6356,8 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _tipos__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tipos */ "./resources/js/vue/views/tipos.vue");
+/* harmony import */ var _color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color */ "./resources/js/vue/views/color.vue");
 //
 //
 //
@@ -6521,8 +6523,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: {},
+  components: {
+    tipos: _tipos__WEBPACK_IMPORTED_MODULE_0__["default"],
+    color: _color__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   data: function data() {
     return {
       categorias: [],
@@ -6537,11 +6564,6 @@ __webpack_require__.r(__webpack_exports__);
     $(document).ready(function () {
       that.init();
       $('.modal_salir').modal();
-
-      Array.prototype.random = function (length) {
-        return this[Math.floor(Math.random() * length)];
-      };
-
       $('.modal_modificar_categoria').modal();
       $('.modal_crear_categoria').modal();
       $('.modal_crear_clave').modal();
@@ -6553,14 +6575,10 @@ __webpack_require__.r(__webpack_exports__);
       var that = this;
       axios({
         method: 'get',
-        url: siteRoutes['categorias'],
+        url: siteRoutes['lista'],
         responseType: 'json'
       }).then(function (res) {
-        if (res.data.length) {
-          that.categorias = res.data;
-        } else {
-          window.mensaje_rapido("No hay categorias,crea una", 'error');
-        }
+        that.categorias = res.data;
       });
     },
     logout: function logout() {
@@ -6580,23 +6598,18 @@ __webpack_require__.r(__webpack_exports__);
       document.execCommand("Copy");
       $('#categorias').focus();
     },
-    mostrarDatos: function mostrarDatos(categoria, clave) {
-      this.flag = clave;
-      this.dialog = this.categorias[categoria]['claves'][clave];
-      this.flag = this.dialog['claves_id'];
-      $('.dialog-box')[0].show();
-    },
-    showModificarCategoria: function showModificarCategoria(categoria, id) {
-      this.nombre = categoria;
-      this.flag = id;
-      $('.modal_modificar_categoria').modal('open');
+    modalCrearCategoria: function modalCrearCategoria(categoria, id) {
+      $('.modal_crear_categoria').modal('open');
       window.customUpdateFields();
     },
     crearCategoria: function crearCategoria() {
+      $('#modificar_categoria_tipo').val("00");
+      $('#modificar_categoria_tipo').trigger('change');
       var that = this;
       Swal.showLoading();
-      axios.post(siteRoutes['crearcategoria'], {
-        nombre: $('#crear_categoria_titulo').val()
+      axios.post(siteRoutes['crearCategoria'], {
+        nombre: $('#crear_categoria_titulo').val(),
+        tipo: $('#crear_categoria_tipo').val()
       }).then(function (res) {
         Swal.close();
 
@@ -6608,14 +6621,19 @@ __webpack_require__.r(__webpack_exports__);
         } else if (res.data.status == "error") {
           window.mensaje_grande(res.data.message, "Error al crear categoria", 'error');
         } else {
-          window.mensaje_bloqueador("Error al crear categoria", 'error');
+          window.mensaje_bloqueador("Error critico al crear categoria", 'error');
         }
       })["catch"](function (response) {
         Swal.close();
+        window.mensaje_bloqueador("Error critico al crear categoria", 'error');
       });
     },
-    showCrearCategoria: function showCrearCategoria(categoria, id) {
-      $('.modal_crear_categoria').modal('open');
+    modalModificarCategoria: function modalModificarCategoria(categoria, id, icono) {
+      this.nombre = categoria;
+      this.flag = id;
+      $('.modal_modificar_categoria').modal('open');
+      $('#modificar_categoria_tipo').val(icono);
+      $('#modificar_categoria_tipo').trigger('change');
       window.customUpdateFields();
     },
     modificarCategoria: function modificarCategoria() {
@@ -6632,9 +6650,10 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           Swal.showLoading();
-          axios.post(siteRoutes['modificarcategoria'], {
+          axios.post(siteRoutes['modificarCategoria'], {
             id: that.flag,
-            nombre: $('#modificar_categoria_titulo').val()
+            nombre: $('#modificar_categoria_titulo').val(),
+            tipo: $('#modificar_categoria_tipo').val()
           }).then(function (res) {
             Swal.close();
 
@@ -6646,10 +6665,11 @@ __webpack_require__.r(__webpack_exports__);
             } else if (res.data.status == "error") {
               window.mensaje_grande(res.data.message, "Error al modificar categoria", 'error');
             } else {
-              window.mensaje_bloqueador("Error al crear categoria", 'error');
+              window.mensaje_bloqueador("Error critico al crear categoria", 'error');
             }
           })["catch"](function (response) {
             Swal.close();
+            window.mensaje_bloqueador("Error critico al crear categoria", 'error');
           });
         }
       });
@@ -6668,16 +6688,16 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           Swal.showLoading();
-          axios.post(siteRoutes['borrarcategoria'], {
+          axios.post(siteRoutes['borrarCategoria'], {
             id: that.flag
           }).then(function (res) {
             Swal.close();
 
             if (res.data.status == "success") {
-              window.mensaje_rapido('Categoria borrada', 'success');
-              $('.modal_modificar_categoria').modal('close');
               that.init();
               that.clearData();
+              window.mensaje_rapido('Categoria borrada', 'success');
+              $('.modal_modificar_categoria').modal('close');
             } else if (res.data.status == "error") {
               window.mensaje_grande(res.data.message, "Error al borrar categoria", 'error');
             } else {
@@ -6685,6 +6705,97 @@ __webpack_require__.r(__webpack_exports__);
             }
           })["catch"](function (response) {
             Swal.close();
+            window.mensaje_bloqueador("Error al crear categoria", 'error');
+          });
+        }
+      });
+    },
+    modalCrearClave: function modalCrearClave(categoriaTitulo, categoriaId) {
+      this.nombre = categoriaTitulo;
+      this.flag = categoriaId;
+      $('.modal_crear_clave').modal('open');
+      window.customUpdateFields();
+    },
+    crearClave: function crearClave() {
+      var that = this;
+      Swal.showLoading();
+      axios.post(siteRoutes['crearClave'], {
+        categoria_id: that.flag,
+        titulo: $('#crear_clave_titulo').val(),
+        color: $('#crear_clave_color').val(),
+        tipo: $('#crear_clave_tipo').val(),
+        detalle: $('#crear_clave_detalle').val(),
+        telefono: $('#crear_clave_telefono').val(),
+        cuenta: $('#crear_clave_cuenta').val(),
+        clave: $('#crear_clave_clave').val(),
+        url: $('#crear_clave_url').val()
+      }).then(function (res) {
+        Swal.close();
+
+        if (res.data.status == "success") {
+          window.mensaje_rapido('Clave creada', 'success');
+          $('.modal_crear_clave').modal('close');
+          that.init();
+          that.clearData();
+        } else if (res.data.status == "error") {
+          window.mensaje_grande(res.data.message, "Error al crear clave", 'error');
+        } else {
+          window.mensaje_bloqueador("Error al crear clave", 'error');
+        }
+      })["catch"](function (response) {
+        Swal.close();
+        window.mensaje_bloqueador("Error al crear clave", 'error');
+      });
+    },
+    modalModificarClave: function modalModificarClave(categoria, clave) {
+      this.flag = clave;
+      this.dialog = this.categorias[categoria]['claves'][clave];
+      this.flag = this.dialog['claves_id'];
+      $('#elem_tipo').val(this.dialog.claves_tipo);
+      $('#elem_tipo').trigger('change');
+      $('#elem_color').val(this.dialog.claves_color);
+      $('#elem_color').trigger('change');
+      $('.dialog-box')[0].show();
+    },
+    modificarClave: function modificarClave() {
+      var that = this;
+      Swal.fire({
+        title: 'Modificar clave',
+        text: "Seguro quiere modificar esta clave?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, modificar',
+        cancelButtonText: 'No'
+      }).then(function (result) {
+        if (result.value) {
+          Swal.showLoading();
+          axios.post(siteRoutes['modificarClave'], {
+            id: that.flag,
+            titulo: $('#elem_titulo').val(),
+            detalle: $('#elem_det').val(),
+            telefono: $('#elem_tel').val(),
+            cuenta: $('#elem_cuenta').val(),
+            clave: $('#elem_clave').val(),
+            url: $('#elem_url').val(),
+            tipo: $('#elem_tipo').val(),
+            color: $('#elem_color').val()
+          }).then(function (res) {
+            Swal.close();
+
+            if (res.data.status == "success") {
+              window.mensaje_rapido('Clave modificada', 'success');
+              $('.dialog-box')[0].handleCloseClick();
+              that.init();
+            } else if (res.data.status == "error") {
+              window.mensaje_grande(res.data.message, "Error al modificar clave", 'error');
+            } else {
+              window.mensaje_bloqueador("Error al modificar clave", 'error');
+            }
+          })["catch"](function (response) {
+            Swal.close();
+            window.mensaje_bloqueador("Error al modificar clave", 'error');
           });
         }
       });
@@ -6703,7 +6814,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           Swal.showLoading();
-          axios.post(siteRoutes['borrarclave'], {
+          axios.post(siteRoutes['borrarClave'], {
             id: that.flag
           }).then(function (res) {
             Swal.close();
@@ -6720,81 +6831,9 @@ __webpack_require__.r(__webpack_exports__);
             }
           })["catch"](function (response) {
             Swal.close();
+            window.mensaje_bloqueador("Error al borrar clave", 'error');
           });
         }
-      });
-    },
-    modificarClave: function modificarClave() {
-      var that = this;
-      Swal.fire({
-        title: 'Modificar clave',
-        text: "Seguro quiere modificar esta clave?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, modificar',
-        cancelButtonText: 'No'
-      }).then(function (result) {
-        if (result.value) {
-          Swal.showLoading();
-          axios.post(siteRoutes['modificarclave'], {
-            id: that.flag,
-            titulo: $('#elem_titulo').val(),
-            detalle: $('#elem_det').val(),
-            telefono: $('#elem_tel').val(),
-            cuenta: $('#elem_cuenta').val(),
-            clave: $('#elem_clave').val(),
-            url: $('#elem_url').val()
-          }).then(function (res) {
-            Swal.close();
-
-            if (res.data.status == "success") {
-              window.mensaje_rapido('Clave modificada', 'success');
-              $('.dialog-box')[0].handleCloseClick();
-              that.init();
-            } else if (res.data.status == "error") {
-              window.mensaje_grande(res.data.message, "Error al modificar clave", 'error');
-            } else {
-              window.mensaje_bloqueador("Error al modificar clave", 'error');
-            }
-          })["catch"](function (response) {
-            Swal.close();
-          });
-        }
-      });
-    },
-    showCrearClave: function showCrearClave(categoriaTitulo, categoriaId) {
-      this.nombre = categoriaTitulo;
-      this.flag = categoriaId;
-      $('.modal_crear_clave').modal('open');
-      window.customUpdateFields();
-    },
-    crearClave: function crearClave() {
-      var that = this;
-      Swal.showLoading();
-      axios.post(siteRoutes['crearclave'], {
-        categoria_id: that.flag,
-        titulo: $('#crear_clave_titulo').val(),
-        detalle: $('#crear_clave_detalle').val(),
-        telefono: $('#crear_clave_telefono').val(),
-        cuenta: $('#crear_clave_cuenta').val(),
-        clave: $('#crear_clave_clave').val(),
-        url: $('#crear_clave_url').val()
-      }).then(function (res) {
-        Swal.close();
-
-        if (res.data.status == "success") {
-          window.mensaje_rapido('Clave creada', 'success');
-          $('.modal_crear_clave').modal('close');
-          that.init();
-        } else if (res.data.status == "error") {
-          window.mensaje_grande(res.data.message, "Error al crear clave", 'error');
-        } else {
-          window.mensaje_bloqueador("Error al crear clave", 'error');
-        }
-      })["catch"](function (response) {
-        Swal.close();
       });
     },
     clearData: function clearData() {
@@ -6820,6 +6859,50 @@ __webpack_require__.r(__webpack_exports__);
       $('#crear_clave_url').val("");
       window.customUpdateFields();
     }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/color.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/vue/views/color.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    ident: String
+  },
+  data: function data() {
+    return {};
+  },
+  created: function created() {
+    var that = this;
+    $(document).ready(function () {
+      $("#" + that.ident).select2({
+        minimumResultsForSearch: Infinity,
+        width: '150px'
+      });
+    });
   }
 });
 
@@ -6964,24 +7047,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {},
   data: function data() {
     return {};
   },
   created: function created() {
-    this.init();
     $(document).ready(function () {
       $('.modal_reg').modal();
       $('.modal_olv').modal();
-      $('.modal_info').modal();
     });
   },
   methods: {
-    init: function init() {},
     loginAsGuest: function loginAsGuest() {
       $('#mail').val(siteInvitado['usuario']);
       $('#clave').val(siteInvitado['clave']);
@@ -7019,7 +7096,112 @@ __webpack_require__.r(__webpack_exports__);
         });else window.mensaje_rapido(res.data.mensaje, 'error');
       });
     },
-    loadTemplate: function loadTemplate() {}
+    nuevoUsuario: function nuevoUsuario() {
+      Swal.fire({
+        title: 'Todos los datos estan correctos?',
+        text: "Por favor verifiquelos antes de continuar",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, enviar',
+        cancelButtonText: 'No'
+      }).then(function (result) {
+        if (result.value) {
+          Swal.showLoading();
+          axios.post(siteRoutes['nuevoUsuario'], {
+            nombre: $('#reg_nombre').val(),
+            mail: $('#reg_mail').val(),
+            password: $('#reg_pass').val(),
+            password_confirmation: $('#reg_pass_confirmation').val()
+          }).then(function (res) {
+            Swal.close();
+
+            if (res.data.status == "success") {
+              window.mensaje_grande("Usuario creado exitosamente", "Usuario creado", 'success');
+              $('.modal_reg').modal('close');
+              $('#reg_nombre').val("");
+              $('#reg_mail').val("");
+              $('#reg_pass').val("");
+              $('#reg_pass_confirmation').val("");
+            } else if (res.data.status == "error") {
+              window.mensaje_grande(res.data.message, "Error al crear usuario", 'error');
+            } else {
+              window.mensaje_bloqueador("Error al crear usuario", 'error');
+            }
+          })["catch"](function (response) {
+            Swal.close();
+          });
+        }
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/tipos.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/vue/views/tipos.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    ident: String
+  },
+  data: function data() {
+    return {};
+  },
+  created: function created() {
+    var that = this;
+    $(document).ready(function () {
+      function formatState(state) {
+        if (!state.id) {
+          return state.text;
+        }
+
+        var baseUrl = "/includes/icons";
+        var $state = $('<span><img src="' + baseUrl + '/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>');
+        return $state;
+      }
+
+      ;
+      $("#" + that.ident).select2({
+        templateResult: formatState,
+        minimumResultsForSearch: Infinity,
+        width: '150px'
+      });
+    });
   }
 });
 
@@ -7056,7 +7238,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\nsl-icon[data-v-1ef19dc8]::part(base) {\n    color: #2b6eff;\n}\n", ""]);
+exports.push([module.i, "\nsl-icon[data-v-1ef19dc8]::part(base) {\n    color: #2b6eff;\n}\n.chip-fix[data-v-1ef19dc8]{\n    background-color: unset!important;\n}\n", ""]);
 
 // exports
 
@@ -52371,101 +52553,122 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c(
-      "a",
-      {
-        staticClass: "header center-align mt-5 pointer right",
-        attrs: { id: "salir", onclick: "$('.modal_salir').modal('open')" }
-      },
-      [_vm._v("Salir")]
-    ),
-    _vm._v(" "),
-    _c(
-      "h2",
-      { staticClass: "header center-align", attrs: { id: "MainTitulo" } },
-      [_vm._v("OnePass")]
-    ),
-    _vm._v(" "),
-    _c(
-      "h5",
-      { staticClass: "header center-align", attrs: { id: "SubTitulo" } },
-      [
-        _vm._v("Categorias\n        "),
-        _c(
-          "sl-button",
-          {
-            attrs: { type: "default", size: "small", circle: "" },
-            on: {
-              click: function($event) {
-                return _vm.showCrearCategoria()
-              }
-            }
-          },
-          [_c("sl-icon", { attrs: { name: "plus" } })],
-          1
-        )
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "modal modal_salir", attrs: { id: "modal_salir" } },
-      [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "modal-footer center" }, [
+  return _c(
+    "div",
+    { staticClass: "container" },
+    [
+      _c(
+        "a",
+        {
+          staticClass: "header center-align mt-5 pointer right",
+          attrs: { id: "salir", onclick: "$('.modal_salir').modal('open')" }
+        },
+        [_vm._v("Salir")]
+      ),
+      _vm._v(" "),
+      _c(
+        "h2",
+        { staticClass: "header center-align", attrs: { id: "MainTitulo" } },
+        [_vm._v("OnePass")]
+      ),
+      _vm._v(" "),
+      _c(
+        "h5",
+        { staticClass: "header center-align", attrs: { id: "SubTitulo" } },
+        [
+          _vm._v("Categorias\n        "),
           _c(
-            "a",
+            "sl-button",
             {
-              staticClass:
-                "pointer modal-close waves-effect waves-green green darken-1 white-text btn-flat left",
-              attrs: { onclick: "$('.modal_salir').modal('close')" }
-            },
-            [_vm._v("Volver")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass:
-                "pointer modal-close waves-effect waves-green red darken-1 white-text btn-flat right",
+              attrs: { type: "default", size: "small", circle: "" },
               on: {
                 click: function($event) {
-                  return _vm.logout()
+                  return _vm.modalCrearCategoria()
                 }
               }
             },
-            [_vm._v("Cerrar sesion")]
+            [_c("sl-icon", { attrs: { name: "plus" } })],
+            1
           )
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "categorias mt-5", attrs: { id: "categorias" } },
-      [
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "modal modal_salir", attrs: { id: "modal_salir" } },
+        [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer center" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "pointer modal-close waves-effect waves-green green darken-1 white-text btn-flat left",
+                attrs: { onclick: "$('.modal_salir').modal('close')" }
+              },
+              [_vm._v("Volver")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass:
+                  "pointer modal-close waves-effect waves-green red darken-1 white-text btn-flat right",
+                on: {
+                  click: function($event) {
+                    return _vm.logout()
+                  }
+                }
+              },
+              [_vm._v("Cerrar sesion")]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "categorias mt-5", attrs: { id: "categorias" } },
         _vm._l(_vm.categorias, function(categoria, indexCat) {
           return _c(
             "sl-details",
-            {
-              key: categoria.categoria_id,
-              staticClass: "mb-2",
-              attrs: { summary: categoria.categoria_titulo }
-            },
+            { key: categoria.categoria_id, staticClass: "mb-2" },
             [
+              _c(
+                "div",
+                {
+                  staticClass: "chip chip-fix",
+                  attrs: { slot: "summary" },
+                  slot: "summary"
+                },
+                [
+                  _c("img", {
+                    attrs: {
+                      src:
+                        "/includes/icons/" + categoria.categoria_icono + ".png"
+                    }
+                  }),
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(categoria.categoria_titulo) +
+                      "\n            "
+                  )
+                ]
+              ),
+              _vm._v(" "),
               _c(
                 "sl-button",
                 {
-                  staticClass: "mr-2",
+                  staticClass: "mr-2 mt-2",
                   attrs: { type: "default", size: "small", circle: "" },
                   on: {
                     click: function($event) {
-                      return _vm.showModificarCategoria(
+                      return _vm.modalModificarCategoria(
                         categoria.categoria_titulo,
-                        categoria.categoria_id
+                        categoria.categoria_id,
+                        categoria.categoria_icono
                       )
                     }
                   }
@@ -52477,11 +52680,11 @@ var render = function() {
               _c(
                 "sl-button",
                 {
-                  staticClass: "mr-2",
+                  staticClass: "mr-2 mt-2",
                   attrs: { type: "default", size: "small", circle: "" },
                   on: {
                     click: function($event) {
-                      return _vm.showCrearClave(
+                      return _vm.modalCrearClave(
                         categoria.categoria_titulo,
                         categoria.categoria_id
                       )
@@ -52497,19 +52700,34 @@ var render = function() {
                   "sl-button",
                   {
                     key: clave.claves_id,
-                    staticClass: "mr-2",
-                    attrs: { type: "primary" },
+                    staticClass: "mr-2 mt-2",
+                    attrs: { type: clave.claves_color },
                     on: {
                       click: function($event) {
-                        return _vm.mostrarDatos(indexCat, indexClave)
+                        return _vm.modalModificarClave(indexCat, indexClave)
                       }
                     }
                   },
                   [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(clave.claves_titulo) +
-                        "\n                "
+                    _c(
+                      "div",
+                      {
+                        staticClass: "chip chip-fix mt-1",
+                        attrs: { slot: "prefix" },
+                        slot: "prefix"
+                      },
+                      [
+                        _c("img", {
+                          attrs: {
+                            src: "/includes/icons/" + clave.claves_tipo + ".png"
+                          }
+                        }),
+                        _vm._v(
+                          "\n                           " +
+                            _vm._s(clave.claves_titulo) +
+                            "\n                       "
+                        )
+                      ]
                     )
                   ]
                 )
@@ -52518,382 +52736,454 @@ var render = function() {
             2
           )
         }),
-        _vm._v(" "),
-        _c(
-          "sl-dialog",
-          {
-            staticClass: "dialog-box dialog-focus",
-            attrs: { label: "Detalle" }
-          },
-          [
-            _c("a", [_vm._v("Titulo ")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_titulo",
-                    type: "text",
-                    value: _vm.dialog.claves_titulo
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_titulo")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("Detalle ")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_det",
-                    type: "text",
-                    value: _vm.dialog.claves_texto
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_det")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("Telefono")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_tel",
-                    type: "text",
-                    value: _vm.dialog.claves_tel
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_tel")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("Cuenta")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_cuenta",
-                    type: "text",
-                    value: _vm.dialog.claves_cuenta
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_cuenta")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("Clave")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_clave",
-                    type: "password",
-                    value: _vm.dialog.claves_clave,
-                    "toggle-password": ""
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_clave")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("Url")]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "row" },
-              [
-                _c("sl-input", {
-                  staticClass: "col s10",
-                  attrs: {
-                    id: "elem_url",
-                    type: "text",
-                    value: _vm.dialog.claves_url
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "col s2",
-                    attrs: { type: "success", size: "medium" },
-                    on: {
-                      click: function($event) {
-                        return _vm.copiar("elem_url")
-                      }
-                    }
-                  },
-                  [_vm._v("Copiar")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "modal-footer mt-5" },
-              [
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "left",
-                    attrs: { slot: "footer", type: "danger" },
-                    on: {
-                      click: function($event) {
-                        return _vm.borrarClave()
-                      }
-                    },
-                    slot: "footer"
-                  },
-                  [_vm._v("Borrar")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "sl-button",
-                  {
-                    staticClass: "right",
-                    attrs: { slot: "footer", type: "primary" },
-                    on: {
-                      click: function($event) {
-                        return _vm.modificarClave()
-                      }
-                    },
-                    slot: "footer"
-                  },
-                  [_vm._v("Modificar")]
-                )
-              ],
-              1
-            )
-          ]
-        )
-      ],
-      2
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "modal modal_modificar_categoria",
-        attrs: { id: "modal_modificar_categoria" }
-      },
-      [
-        _c("div", { staticClass: "modal-content" }, [
-          _c("h4", [_vm._v("Modificar categoria")]),
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "sl-dialog",
+        { staticClass: "dialog-box dialog-focus", attrs: { label: "Detalle" } },
+        [
+          _c("a", [_vm._v("Titulo ")]),
           _vm._v(" "),
           _c(
-            "button",
-            {
-              staticClass: "modal-close btn-flat",
-              staticStyle: { position: "absolute", top: "0", right: "0" }
-            },
-            [_vm._v("X")]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "input-field col s12 label-fix" }, [
-              _c("input", {
-                attrs: { id: "modificar_categoria_titulo", type: "text" },
-                domProps: { value: _vm.nombre }
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_titulo",
+                  type: "text",
+                  value: _vm.dialog.claves_titulo
+                }
               }),
               _vm._v(" "),
-              _vm._m(1)
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "modal-footer" },
-          [
-            _c(
-              "sl-button",
-              {
-                staticClass: "left",
-                attrs: { slot: "footer", type: "danger" },
-                on: {
-                  click: function($event) {
-                    return _vm.borrarCategoria()
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_titulo")
+                    }
                   }
                 },
-                slot: "footer"
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("a", [_vm._v("Detalle ")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_det",
+                  type: "text",
+                  value: _vm.dialog.claves_texto
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_det")
+                    }
+                  }
+                },
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("a", [_vm._v("Telefono")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_tel",
+                  type: "text",
+                  value: _vm.dialog.claves_tel
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_tel")
+                    }
+                  }
+                },
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("a", [_vm._v("Cuenta")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_cuenta",
+                  type: "text",
+                  value: _vm.dialog.claves_cuenta
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_cuenta")
+                    }
+                  }
+                },
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("a", [_vm._v("Clave")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_clave",
+                  type: "password",
+                  value: _vm.dialog.claves_clave,
+                  "toggle-password": ""
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_clave")
+                    }
+                  }
+                },
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("a", [_vm._v("Url")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("sl-input", {
+                staticClass: "col s10",
+                attrs: {
+                  id: "elem_url",
+                  type: "text",
+                  value: _vm.dialog.claves_url
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "col s2",
+                  attrs: { type: "success", size: "medium" },
+                  on: {
+                    click: function($event) {
+                      return _vm.copiar("elem_url")
+                    }
+                  }
+                },
+                [_vm._v("Copiar")]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "row" },
+            [
+              _c("tipos", { attrs: { ident: "elem_tipo" } }),
+              _vm._v(" "),
+              _c("color", { attrs: { ident: "elem_color" } })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "modal-footer mt-5" },
+            [
+              _c(
+                "sl-button",
+                {
+                  staticClass: "left",
+                  attrs: { slot: "footer", type: "danger" },
+                  on: {
+                    click: function($event) {
+                      return _vm.borrarClave()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Borrar")]
+              ),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  staticClass: "right",
+                  attrs: { slot: "footer", type: "primary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.modificarClave()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Modificar")]
+              )
+            ],
+            1
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "modal modal_modificar_categoria",
+          attrs: { id: "modal_modificar_categoria" }
+        },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("h4", [_vm._v("Modificar categoria")]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "modal-close btn-flat",
+                staticStyle: { position: "absolute", top: "0", right: "0" }
               },
-              [_vm._v("Borrar")]
+              [_vm._v("X")]
             ),
             _vm._v(" "),
             _c(
-              "sl-button",
-              {
-                attrs: { slot: "footer", type: "primary" },
-                on: {
-                  click: function($event) {
-                    return _vm.modificarCategoria()
-                  }
-                },
-                slot: "footer"
-              },
-              [_vm._v("Modificar")]
+              "div",
+              { staticClass: "row" },
+              [
+                _c("tipos", { attrs: { ident: "modificar_categoria_tipo" } }),
+                _vm._v(" "),
+                _c("div", { staticClass: "input-field col s12 m7 label-fix" }, [
+                  _c("input", {
+                    attrs: { id: "modificar_categoria_titulo", type: "text" },
+                    domProps: { value: _vm.nombre }
+                  }),
+                  _vm._v(" "),
+                  _vm._m(1)
+                ])
+              ],
+              1
             )
-          ],
-          1
-        )
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "modal modal_crear_categoria",
-        attrs: { id: "modal_crear_categoria" }
-      },
-      [
-        _vm._m(2),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "modal-footer" },
-          [
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "modal-footer" },
+            [
+              _c(
+                "sl-button",
+                {
+                  staticClass: "left",
+                  attrs: { slot: "footer", type: "danger" },
+                  on: {
+                    click: function($event) {
+                      return _vm.borrarCategoria()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Borrar")]
+              ),
+              _vm._v(" "),
+              _c(
+                "sl-button",
+                {
+                  attrs: { slot: "footer", type: "primary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.modificarCategoria()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Modificar")]
+              )
+            ],
+            1
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "modal modal_crear_categoria",
+          attrs: { id: "modal_crear_categoria" }
+        },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("h4", [_vm._v("Crear categoria")]),
+            _vm._v(" "),
             _c(
-              "sl-button",
+              "button",
               {
-                attrs: { slot: "footer", type: "primary" },
-                on: {
-                  click: function($event) {
-                    return _vm.crearCategoria()
-                  }
-                },
-                slot: "footer"
+                staticClass: "modal-close btn-flat",
+                staticStyle: { position: "absolute", top: "0", right: "0" }
               },
-              [_vm._v("Crear")]
-            )
-          ],
-          1
-        )
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        staticClass: "modal modal_crear_clave",
-        attrs: { id: "modal_crear_clave" }
-      },
-      [
-        _vm._m(3),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "modal-footer" },
-          [
+              [_vm._v("X")]
+            ),
+            _vm._v(" "),
             _c(
-              "sl-button",
-              {
-                attrs: { slot: "footer", type: "primary" },
-                on: {
-                  click: function($event) {
-                    return _vm.crearClave()
-                  }
-                },
-                slot: "footer"
-              },
-              [_vm._v("Crear")]
+              "div",
+              { staticClass: "row" },
+              [
+                _c("tipos", { attrs: { ident: "crear_categoria_tipo" } }),
+                _vm._v(" "),
+                _vm._m(2)
+              ],
+              1
             )
-          ],
-          1
-        )
-      ]
-    )
-  ])
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "modal-footer" },
+            [
+              _c(
+                "sl-button",
+                {
+                  attrs: { slot: "footer", type: "primary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.crearCategoria()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Crear")]
+              )
+            ],
+            1
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "modal modal_crear_clave",
+          attrs: { id: "modal_crear_clave" }
+        },
+        [
+          _c("div", { staticClass: "modal-content" }, [
+            _c("h4", [_vm._v("Crear clave")]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "modal-close btn-flat",
+                staticStyle: { position: "absolute", top: "0", right: "0" }
+              },
+              [_vm._v("X")]
+            ),
+            _vm._v(" "),
+            _vm._m(3),
+            _vm._v(" "),
+            _vm._m(4),
+            _vm._v(" "),
+            _vm._m(5),
+            _vm._v(" "),
+            _vm._m(6),
+            _vm._v(" "),
+            _vm._m(7),
+            _vm._v(" "),
+            _vm._m(8),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "row" },
+              [
+                _c("tipos", { attrs: { ident: "crear_clave_tipo" } }),
+                _vm._v(" "),
+                _c("color", { attrs: { ident: "crear_clave_color" } })
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "modal-footer" },
+            [
+              _c(
+                "sl-button",
+                {
+                  attrs: { slot: "footer", type: "primary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.crearClave()
+                    }
+                  },
+                  slot: "footer"
+                },
+                [_vm._v("Crear")]
+              )
+            ],
+            1
+          )
+        ]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -52917,19 +53207,26 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-content" }, [
-      _c("h4", [_vm._v("Crear categoria")]),
+    return _c("div", { staticClass: "input-field col s12 m7 label-fix" }, [
+      _c("input", { attrs: { id: "crear_categoria_titulo", type: "text" } }),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", {
-            attrs: { id: "crear_categoria_titulo", type: "text" }
-          }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_categoria_titulo" } }, [
-            _vm._v("Titulo       "),
-            _c("i", [_vm._v("* campo requerido")])
-          ])
+      _c("label", { attrs: { for: "crear_categoria_titulo" } }, [
+        _vm._v("Titulo       "),
+        _c("i", [_vm._v("* campo requerido")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_titulo", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_titulo" } }, [
+          _vm._v("Titulo       "),
+          _c("i", [_vm._v("* campo requerido")])
         ])
       ])
     ])
@@ -52938,70 +53235,114 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-content" }, [
-      _c("h4", [_vm._v("Crear clave")]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_titulo", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_titulo" } }, [
-            _vm._v("Titulo       "),
-            _c("i", [_vm._v("* campo requerido")])
-          ])
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_detalle", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_detalle" } }, [
+          _vm._v("Detalle")
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_detalle", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_detalle" } }, [
-            _vm._v("Detalle")
-          ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_telefono", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_telefono" } }, [
+          _vm._v("Telefono")
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_telefono", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_telefono" } }, [
-            _vm._v("Telefono")
-          ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_cuenta", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_cuenta" } }, [
+          _vm._v("Cuenta")
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_cuenta", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_cuenta" } }, [
-            _vm._v("Cuenta")
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_clave", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_clave" } }, [
-            _vm._v("Clave")
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", [
-        _c("div", { staticClass: "input-field col s12 label-fix" }, [
-          _c("input", { attrs: { id: "crear_clave_url", type: "text" } }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "crear_clave_url" } }, [_vm._v("Url")])
-        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_clave", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_clave" } }, [_vm._v("Clave")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("div", { staticClass: "input-field col s12 label-fix" }, [
+        _c("input", { attrs: { id: "crear_clave_url", type: "text" } }),
+        _vm._v(" "),
+        _c("label", { attrs: { for: "crear_clave_url" } }, [_vm._v("Url")])
       ])
     ])
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true& ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: " col s12 m7 " }, [
+    _c("label", { attrs: { for: _vm.ident } }, [
+      _vm._v("\n        Color "),
+      _c("br"),
+      _vm._v(" "),
+      _c(
+        "select",
+        { staticClass: "mt-3", attrs: { id: _vm.ident, name: _vm.ident } },
+        [
+          _c("option", { attrs: { value: "primary" } }, [_vm._v("Azul")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "success" } }, [_vm._v("Verde")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "info" } }, [_vm._v("Gris")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "warning" } }, [_vm._v("Naranja")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "danger" } }, [_vm._v("Rojo")])
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -53126,10 +53467,8 @@ var render = function() {
             _c(
               "a",
               {
-                attrs: {
-                  href: "javascript:void(0)",
-                  onclick: "$('.modal_reg').modal('open')"
-                }
+                staticClass: "pointer",
+                attrs: { onclick: "$('.modal_reg').modal('open')" }
               },
               [_vm._v("Registrase")]
             ),
@@ -53139,37 +53478,159 @@ var render = function() {
             _c(
               "a",
               {
-                attrs: {
-                  href: "javascript:void(0)",
-                  onclick: "$('.modal_olv').modal('open')"
-                }
+                staticClass: "pointer",
+                attrs: { onclick: "$('.modal_olv').modal('open')" }
               },
               [_vm._v("Olvide mi clave")]
-            ),
-            _vm._v(" "),
-            _c("a", [_vm._v("   |   ")]),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                attrs: {
-                  href: "javascript:void(0)",
-                  onclick: "$('.modal_info').modal('open')"
-                }
-              },
-              [_vm._v("?")]
             )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "card-panel amber lighten-3 center" }, [
+              _c("p", [
+                _vm._v(
+                  " Gestion de claves en la nube, simple y seguro. Compatible con todo tipo de dispositivos, permite generar categoria y usar etiquetas graficas."
+                )
+              ]),
+              _vm._v(" "),
+              _c("p", [
+                _vm._v(
+                  " Aplicacion sin fines de lucro, no apto para uso profesional, y de libre distribucion."
+                )
+              ]),
+              _vm._v(" "),
+              _c("p", [_vm._v(" Creado por Juan Manuel Tula")]),
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _c("h5", [_vm._v("Herramientas usadas")]),
+              _vm._v(" "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://laravel.com/" } },
+                [_vm._v("Laravel")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://www.php.net/" } },
+                [_vm._v("Php")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://www.mysql.com/" } },
+                [_vm._v("MySql")]
+              ),
+              _vm._v(" "),
+              _c("br"),
+              _vm._v(" "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://es.vuejs.org/" } },
+                [_vm._v("Vue")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                {
+                  attrs: { target: "_blank", href: "https://router.vuejs.org/" }
+                },
+                [_vm._v("Vue Route")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://jquery.com/" } },
+                [_vm._v("Jquery")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                {
+                  attrs: {
+                    target: "_blank",
+                    href: "https://materializecss.com/"
+                  }
+                },
+                [_vm._v("Materialize")]
+              ),
+              _vm._v(" "),
+              _c("br"),
+              _vm._v(" "),
+              _c(
+                "a",
+                { attrs: { target: "_blank", href: "https://select2.org/" } },
+                [_vm._v("Select2")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                {
+                  attrs: {
+                    target: "_blank",
+                    href: "https://sweetalert2.github.io/"
+                  }
+                },
+                [_vm._v("SweetAlert2")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                {
+                  attrs: {
+                    target: "_blank",
+                    href: "https://github.com/axios/axios"
+                  }
+                },
+                [_vm._v("Axios")]
+              ),
+              _vm._v(" -\n                "),
+              _c(
+                "a",
+                {
+                  attrs: { target: "_blank", href: "https://shoelace.style/" }
+                },
+                [_vm._v("Shoelace")]
+              )
+            ])
           ])
         ])
       ],
       1
     ),
     _vm._v(" "),
-    _vm._m(0),
+    _c("div", { staticClass: "modal modal_reg", attrs: { id: "modal_reg" } }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "modal-footer" }, [
+        _c(
+          "a",
+          {
+            staticClass:
+              "modal-close waves-effect waves-green red darken-1 white-text btn-flat left pointer",
+            attrs: { onclick: "$('.modal_reg').modal('close')" }
+          },
+          [_vm._v("Cerrar")]
+        ),
+        _vm._v(" "),
+        _c(
+          "a",
+          {
+            staticClass:
+              "waves-effect waves-green light-blue darken-2 white-text btn-flat pointer",
+            on: {
+              click: function($event) {
+                return _vm.nuevoUsuario()
+              }
+            }
+          },
+          [_vm._v("Registrase")]
+        )
+      ])
+    ]),
     _vm._v(" "),
-    _vm._m(1),
-    _vm._v(" "),
-    _vm._m(2)
+    _vm._m(1)
   ])
 }
 var staticRenderFns = [
@@ -53177,87 +53638,56 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "modal modal_reg", attrs: { id: "modal_reg" } },
-      [
-        _c("div", { staticClass: "modal-content" }, [
-          _c("h4", { staticClass: "center-align" }, [_vm._v("Bienvenido")]),
-          _vm._v(" "),
-          _c("p", { staticClass: "center-align" }, [
-            _vm._v(
-              "Complete todos los campos y no se olvide de su clave, esta no puede ser recuperada ni cambiada a futuro."
-            )
+    return _c("div", { staticClass: "modal-content" }, [
+      _c("h4", { staticClass: "center-align" }, [_vm._v("Bienvenido")]),
+      _vm._v(" "),
+      _c("p", { staticClass: "center-align" }, [
+        _vm._v(
+          "Complete todos los campos y no se olvide de su clave, esta no puede ser recuperada ni cambiada a futuro."
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col s12" }, [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "input-field col s12" }, [
+              _c("input", { attrs: { id: "reg_nombre", type: "text" } }),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "reg_nombre" } }, [_vm._v("Nombre")])
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col s12" }, [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "input-field col s12" }, [
-                  _c("input", { attrs: { id: "reg_nombre", type: "text" } }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "reg_nombre" } }, [
-                    _vm._v("Nombre")
-                  ])
-                ])
-              ]),
+            _c("div", { staticClass: "input-field col s12" }, [
+              _c("input", {
+                staticClass: "validate",
+                attrs: { id: "reg_mail", type: "email" }
+              }),
               _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "input-field col s12" }, [
-                  _c("input", {
-                    staticClass: "validate",
-                    attrs: { id: "reg_mail", type: "email" }
-                  }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "reg_mail" } }, [_vm._v("Mail")])
-                ])
-              ]),
+              _c("label", { attrs: { for: "reg_mail" } }, [_vm._v("Mail")])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "input-field col s12 m6" }, [
+              _c("input", { attrs: { id: "reg_pass", type: "password" } }),
               _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "input-field col s12 m6" }, [
-                  _c("input", { attrs: { id: "reg_pass", type: "password" } }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "reg_pass" } }, [_vm._v("Clave")])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "input-field col s12 m6" }, [
-                  _c("input", { attrs: { id: "reg_pass2", type: "password" } }),
-                  _vm._v(" "),
-                  _c("label", { attrs: { for: "reg_pass2" } }, [
-                    _vm._v("Repetir clave")
-                  ])
-                ])
+              _c("label", { attrs: { for: "reg_pass" } }, [_vm._v("Clave")])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "input-field col s12 m6" }, [
+              _c("input", {
+                attrs: { id: "reg_pass_confirmation", type: "password" }
+              }),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "reg_pass_confirmation" } }, [
+                _vm._v("Repetir clave")
               ])
             ])
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "modal-footer" }, [
-          _c(
-            "a",
-            {
-              staticClass:
-                "modal-close waves-effect waves-green red darken-1 white-text btn-flat left",
-              attrs: {
-                href: "javascript:void(0)",
-                onclick: "$('.modal_reg').modal('close')"
-              }
-            },
-            [_vm._v("Cerrar")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass:
-                "waves-effect waves-green light-blue darken-2 white-text btn-flat",
-              attrs: { href: "javascript:void(0)", onclick: "registrar();" }
-            },
-            [_vm._v("Registrase")]
-          )
         ])
-      ]
-    )
+      ])
+    ])
   },
   function() {
     var _vm = this
@@ -53293,59 +53723,75 @@ var staticRenderFns = [
         ])
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "modal modal_info", attrs: { id: "modal_info" } },
-      [
-        _c("div", { staticClass: "modal-content" }, [
-          _c("h4", [_vm._v("OnePass")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "row" }, [
-            _c("p", [
-              _vm._v(
-                "Gestion de claves en la nube, simple y seguro. Compatible con todo tipo de dispositivos, permite generar categoria y usar etiquetas graficas."
-              )
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "card-panel yellow lighten-1 center" }, [
-              _vm._v(
-                "Aplicacion sin fines de lucro, no apto para uso profesional, y de libre distribucion."
-              )
-            ]),
-            _vm._v(" "),
-            _c("p", [_vm._v(" Creado por Juan Manuel Tula")]),
-            _vm._v(" "),
-            _c(
-              "a",
-              { attrs: { href: "http://www.madmoss.com/", target: "_blank" } },
-              [_vm._v("Visitar el sitio del creador")]
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "modal-footer" }, [
-          _c(
-            "a",
-            {
-              staticClass:
-                "modal-close waves-effect waves-green red darken-1 white-text btn-flat left btn-closex",
-              attrs: {
-                href: "javascript:void(0)",
-                onclick: "$('.modal_info').modal('close')"
-              }
-            },
-            [_vm._v("Cerrar")]
-          )
-        ])
-      ]
-    )
   }
 ]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true& ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: " col s12 m5 " }, [
+    _c("label", { attrs: { for: _vm.ident } }, [
+      _vm._v("\n        Tipo "),
+      _c("br"),
+      _vm._v(" "),
+      _c(
+        "select",
+        { staticClass: "mt-3", attrs: { id: _vm.ident, name: _vm.ident } },
+        [
+          _c("option", { attrs: { value: "00" } }, [_vm._v("Nada")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "01" } }, [_vm._v("Rojo")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "02" } }, [_vm._v("Azul")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "03" } }, [_vm._v("Verde")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "04" } }, [_vm._v("Amarillo")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "05" } }, [_vm._v("American Expres")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "06" } }, [_vm._v("Visa")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "07" } }, [_vm._v("Mastercard")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "08" } }, [_vm._v("Paypal")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "09" } }, [_vm._v("Banco")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "10" } }, [_vm._v("Portafolio")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "11" } }, [_vm._v("Autos")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "12" } }, [_vm._v("Casino")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "13" } }, [_vm._v("Tarjetas")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "14" } }, [_vm._v("Herramientas")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "15" } }, [_vm._v("Compras")])
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -74777,6 +75223,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/vue/views/color.vue":
+/*!******************************************!*\
+  !*** ./resources/js/vue/views/color.vue ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./color.vue?vue&type=template&id=6cfa6e2a&scoped=true& */ "./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true&");
+/* harmony import */ var _color_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color.vue?vue&type=script&lang=js& */ "./resources/js/vue/views/color.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _color_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "6cfa6e2a",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/vue/views/color.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/vue/views/color.vue?vue&type=script&lang=js&":
+/*!*******************************************************************!*\
+  !*** ./resources/js/vue/views/color.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./color.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/color.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true& ***!
+  \*************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./color.vue?vue&type=template&id=6cfa6e2a&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/color.vue?vue&type=template&id=6cfa6e2a&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_6cfa6e2a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/vue/views/home.vue":
 /*!*****************************************!*\
   !*** ./resources/js/vue/views/home.vue ***!
@@ -74841,6 +75356,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_home_vue_vue_type_template_id_ea61fcf2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_home_vue_vue_type_template_id_ea61fcf2_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/vue/views/tipos.vue":
+/*!******************************************!*\
+  !*** ./resources/js/vue/views/tipos.vue ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tipos.vue?vue&type=template&id=066e1f47&scoped=true& */ "./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true&");
+/* harmony import */ var _tipos_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tipos.vue?vue&type=script&lang=js& */ "./resources/js/vue/views/tipos.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _tipos_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "066e1f47",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/vue/views/tipos.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/vue/views/tipos.vue?vue&type=script&lang=js&":
+/*!*******************************************************************!*\
+  !*** ./resources/js/vue/views/tipos.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_tipos_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./tipos.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/tipos.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_tipos_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true& ***!
+  \*************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./tipos.vue?vue&type=template&id=066e1f47&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/vue/views/tipos.vue?vue&type=template&id=066e1f47&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_tipos_vue_vue_type_template_id_066e1f47_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

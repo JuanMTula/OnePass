@@ -19,6 +19,7 @@ class CreateclavesTable extends Migration
             $table->longText('claves_titulo');
             $table->longText('claves_texto');
             $table->longText('claves_tipo');
+            $table->longText('claves_color');
             $table->longText('claves_url');
             $table->longText('claves_tel');
             $table->longText('claves_cuenta');
