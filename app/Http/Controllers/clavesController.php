@@ -188,7 +188,7 @@ class clavesController extends Controller
             content::returnErrorAsObject("Categoria no encontrada");
 
         $clave = new claves;
-        $clave->claves_contid = Crypt::encrypt($request['categoria_id']);
+        $clave->claves_contid = $request['categoria_id'];
         $clave->claves_titulo = Crypt::encrypt($request['titulo']);
         $clave->claves_texto = Crypt::encrypt($request['detalle']);
         $clave->claves_tipo = Crypt::encrypt($request['tipo']);

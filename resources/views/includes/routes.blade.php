@@ -21,7 +21,7 @@
 
     const siteInvitado = {
         'usuario' : 'demo@demo.com',
-        'clave'   : 'demo',
+        'clave'   : 'demo123',
     };
 
 
