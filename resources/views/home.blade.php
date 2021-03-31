@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
   <html>
     <head>
         <title>OnePass</title>
@@ -9,18 +8,12 @@
         <meta name="description" content="Password keeper">
         <meta name="author" content="Juan Manuel Tula">
         <link rel="stylesheet" href="./css/app.css">
-
+        @include('includes.preloads')
     </head>
     <body class="sl-theme-dark">
         <div id="app">
-
             <router-view></router-view>
         </div>
-
-      <script src="./js/app.js"></script>
-
-      @include('includes.routes')
-
+        <script src="./js/app.js"></script>
     </body>
-
   </html>

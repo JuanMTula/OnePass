@@ -56,11 +56,13 @@
                     <a target="_blank" href="https://router.vuejs.org/">Vue Route</a> -
                     <a target="_blank" href="https://jquery.com/">Jquery</a> -
                     <a target="_blank" href="https://materializecss.com/">Materialize</a> <br>
-                    
+
                     <a target="_blank" href="https://select2.org/">Select2</a> -
                     <a target="_blank" href="https://sweetalert2.github.io/">SweetAlert2</a> -
                     <a target="_blank" href="https://github.com/axios/axios">Axios</a> -
-                    <a target="_blank" href="https://shoelace.style/">Shoelace</a>
+                    <a target="_blank" href="https://shoelace.style/">Shoelace</a> <br>
+
+                    <a target="_blank" href="https://github.com/JuanMTula/OnePass">GitHub del proyecto</a>
 
                 </div>
 
@@ -147,8 +149,8 @@
         methods: {
 
             loginAsGuest() {
-                $('#mail').val(siteInvitado['usuario']);
-                $('#clave').val(siteInvitado['clave']);
+                $('#mail').val(window.siteInvitado['usuario']);
+                $('#clave').val(window.siteInvitado['clave']);
                 $('#btn-entrar').click();
             },
 
@@ -173,7 +175,7 @@
                 let that = this
                 axios({
                     method : 'get',
-                    url    : siteRoutes['login'],
+                    url    : window.siteRoutes['login'],
                     params : {
                         mail  : $('#mail').val(),
                         clave : $('#clave').val(),
@@ -202,7 +204,7 @@
                 }).then((result) => {
                     if (result.value) {
                         Swal.showLoading();
-                        axios.post(siteRoutes['nuevoUsuario'], {
+                        axios.post(window.siteRoutes['nuevoUsuario'], {
                             nombre: $('#reg_nombre').val(),
                             mail: $('#reg_mail').val(),
                             password: $('#reg_pass').val(),

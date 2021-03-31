@@ -184,8 +184,8 @@
 </template>
 
 <script>
-import tipos from "./tipos";
-import color from "./color";
+import tipos from "./tipos.vue";
+import color from "./color.vue";
 
     export default {
         components: {
@@ -220,7 +220,7 @@ import color from "./color";
                 let that = this;
                 axios({
                     method : 'get',
-                    url    : siteRoutes['lista'],
+                    url    : window.siteRoutes['lista'],
                     responseType: 'json'
                 }).then(function (res) {
                     that.categorias = res.data;
@@ -230,7 +230,7 @@ import color from "./color";
                 const router = this.$router;
                 axios({
                     method : 'get',
-                    url    : siteRoutes['logout'],
+                    url    : window.siteRoutes['logout'],
                     responseType: 'json'
                 }).then(function (res) {
                     if(res.data.valido == true)
@@ -257,7 +257,7 @@ import color from "./color";
                 $('#modificar_categoria_tipo').trigger('change');
                 let that = this;
                 Swal.showLoading();
-                axios.post(siteRoutes['crearCategoria'], {
+                axios.post(window.siteRoutes['crearCategoria'], {
                     nombre: $('#crear_categoria_titulo').val(),
                     tipo: $('#crear_categoria_tipo').val()
                 })
@@ -304,7 +304,7 @@ import color from "./color";
                 }).then((result) => {
                     if (result.value) {
                         Swal.showLoading();
-                        axios.post(siteRoutes['modificarCategoria'], {
+                        axios.post(window.siteRoutes['modificarCategoria'], {
                             id: that.flag,
                             nombre: $('#modificar_categoria_titulo').val(),
                             tipo: $('#modificar_categoria_tipo').val()
@@ -346,7 +346,7 @@ import color from "./color";
                 }).then((result) => {
                     if (result.value) {
                         Swal.showLoading();
-                        axios.post(siteRoutes['borrarCategoria'], {
+                        axios.post(window.siteRoutes['borrarCategoria'], {
                             id: that.flag,
                         })
                             .then(function (res) {
@@ -382,7 +382,7 @@ import color from "./color";
 
                 let that = this;
                 Swal.showLoading();
-                axios.post(siteRoutes['crearClave'], {
+                axios.post(window.siteRoutes['crearClave'], {
                     categoria_id: that.flag,
                     titulo: $('#crear_clave_titulo').val(),
                     color: $('#crear_clave_color').val(),
@@ -437,7 +437,7 @@ import color from "./color";
                 }).then((result) => {
                     if (result.value) {
                         Swal.showLoading();
-                        axios.post(siteRoutes['modificarClave'], {
+                        axios.post(window.siteRoutes['modificarClave'], {
                             id: that.flag,
                             titulo: $('#elem_titulo').val(),
                             detalle: $('#elem_det').val(),
@@ -485,7 +485,7 @@ import color from "./color";
                 }).then((result) => {
                     if (result.value) {
                         Swal.showLoading();
-                        axios.post(siteRoutes['borrarClave'], {
+                        axios.post(window.siteRoutes['borrarClave'], {
                             id: that.flag,
                         })
                             .then(function (res) {

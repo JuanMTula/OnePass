@@ -6,7 +6,8 @@ window.axios = require('axios');
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 require('materialize-css');
 import select2 from './select2.full'
-require('./functions');
+require('./functions.js');
+require('./rutas.js');
 window.Swal  = require('sweetalert2');
 window.Materialize = require('materialize-css');
 
@@ -30,7 +31,7 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter);
 
-Vue.component('V-MaterialIcon', require('vue-materials-icon/MaterialIcon').default);
+Vue.component('V-MaterialIcon', require('vue-materials-icon/MaterialIcon.vue').default);
 
 Vue.config.ignoredElements = [
     'another-web-component',
@@ -41,12 +42,12 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: require('./vue/views/home').default
+        component: require('./vue/views/home.vue').default
     },
     {
         path: '/categorias',
         name: 'categorias',
-        component: require('./vue/views/categorias').default
+        component: require('./vue/views/categorias.vue').default
     },
 
 ]
