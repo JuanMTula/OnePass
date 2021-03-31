@@ -45,55 +45,74 @@
 
         </div>
 
-        <sl-dialog  class="dialog-box dialog-focus"  label="Detalle" >
-
-            <a>Titulo </a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_titulo" type="text" :value="dialog.claves_titulo"></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_titulo')">Copiar</sl-button>
+        <div id="modal_ver_clave" class="modal modal_ver_clave">
+            <div class="modal-content">
+                <h4>Ver clave</h4>
+                <button class="modal-close btn-flat" style="position:absolute;top:0;right:0;">X</button>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_titulo" type="text" :value="dialog.claves_titulo">
+                        <label for="ver_clave_titulo">Titulo &nbsp; &nbsp; &nbsp; <i>* campo requerido</i> </label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_titulo')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_detalle" type="text" :value="dialog.claves_texto">
+                        <label for="ver_clave_detalle">Detalle</label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_detalle')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_telefono" type="text" :value="dialog.claves_tel">
+                        <label for="ver_clave_telefono">Telefono</label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_telefono')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_cuenta" type="text" :value="dialog.claves_cuenta">
+                        <label for="ver_clave_cuenta">Cuenta</label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_cuenta')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_clave" type="text" :value="dialog.claves_clave">
+                        <label for="ver_clave_clave">Clave</label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_clave')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <div class="input-field col s10 m11 label-fix mt-1 mb-1">
+                        <input id="ver_clave_url" type="text" :value="dialog.claves_url">
+                        <label for="ver_clave_url">Url</label>
+                    </div>
+                    <div class="input-field col s2 m1 label-fix">
+                        <a class="btn-floating" @click="copiar('ver_clave_url')"><i class="material-icons left">content_copy</i></a>
+                    </div>
+                </div>
+                <div class="row mb-0">
+                    <tipos ident="ver_clave_tipo"></tipos>
+                    <color ident="ver_clave_color"></color>
+                </div>
             </div>
-
-            <a>Detalle </a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_det" type="text" :value="dialog.claves_texto"></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_det')">Copiar</sl-button>
-            </div>
-
-            <a>Telefono</a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_tel" type="text" :value="dialog.claves_tel"></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_tel')">Copiar</sl-button>
-            </div>
-
-            <a>Cuenta</a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_cuenta" type="text" :value="dialog.claves_cuenta"></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_cuenta')">Copiar</sl-button>
-            </div>
-
-            <a>Clave</a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_clave" type="password" :value="dialog.claves_clave" toggle-password></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_clave')">Copiar</sl-button>
-            </div>
-
-            <a>Url</a>
-            <div class="row">
-                <sl-input class="col s10"  id="elem_url" type="text" :value="dialog.claves_url"></sl-input>
-                <sl-button class="col s2"  type="success" size="medium" @click="copiar('elem_url')">Copiar</sl-button>
-            </div>
-
-            <div class="row">
-                <tipos ident="elem_tipo"></tipos>
-                <color ident="elem_color"></color>
-            </div>
-
-            <div class="modal-footer mt-5">
+            <div class="modal-footer">
                 <sl-button class="left" slot="footer" type="danger" @click="borrarClave()">Borrar</sl-button>
                 <sl-button class="right" slot="footer" type="primary" @click="modificarClave()">Modificar</sl-button>
             </div>
-
-        </sl-dialog>
+        </div>
 
         <div id="modal_modificar_categoria" class="modal modal_modificar_categoria">
             <div class="modal-content">
@@ -210,6 +229,7 @@ import color from "./color.vue";
                 $('.modal_modificar_categoria').modal();
                 $('.modal_crear_categoria').modal();
                 $('.modal_crear_clave').modal();
+                $('.modal_ver_clave').modal();
             });
         },
         mounted() {
@@ -417,11 +437,12 @@ import color from "./color.vue";
                 this.flag = clave;
                 this.dialog = this.categorias[categoria]['claves'][clave];
                 this.flag = this.dialog['claves_id'];
-                $('#elem_tipo').val(this.dialog.claves_tipo);
-                $('#elem_tipo').trigger('change');
-                $('#elem_color').val(this.dialog.claves_color);
-                $('#elem_color').trigger('change');
-                $('.dialog-box')[0].show();
+                $('#ver_clave_tipo').val(this.dialog.claves_tipo);
+                $('#ver_clave_tipo').trigger('change');
+                $('#ver_clave_color').val(this.dialog.claves_color);
+                $('#ver_clave_color').trigger('change');
+                $('.modal_ver_clave').modal('open');
+                window.customUpdateFields();
             },
             modificarClave(){
                 let that = this;
@@ -439,20 +460,20 @@ import color from "./color.vue";
                         Swal.showLoading();
                         axios.post(window.siteRoutes['modificarClave'], {
                             id: that.flag,
-                            titulo: $('#elem_titulo').val(),
-                            detalle: $('#elem_det').val(),
-                            telefono: $('#elem_tel').val(),
-                            cuenta: $('#elem_cuenta').val(),
-                            clave: $('#elem_clave').val(),
-                            url: $('#elem_url').val(),
-                            tipo: $('#elem_tipo').val(),
-                            color: $('#elem_color').val(),
+                            titulo: $('#ver_clave_titulo').val(),
+                            detalle: $('#ver_clave_detalle').val(),
+                            telefono: $('#ver_clave_telefono').val(),
+                            cuenta: $('#ver_clave_cuenta').val(),
+                            clave: $('#ver_clave_clave').val(),
+                            url: $('#ver_clave_url').val(),
+                            tipo: $('#ver_clave_tipo').val(),
+                            color: $('#ver_clave_color').val(),
                         })
                             .then(function (res) {
                                 Swal.close();
                                 if(res.data.status == "success"){
                                     window.mensaje_rapido('Clave modificada','success');
-                                    $('.dialog-box')[0].handleCloseClick();
+                                    $('.modal_ver_clave').modal('close');
                                     that.init();
                                 }
                                 else if(res.data.status == "error"){
@@ -492,7 +513,7 @@ import color from "./color.vue";
                                 Swal.close();
                                 if(res.data.status == "success"){
                                     window.mensaje_rapido('Clave borrada','success');
-                                    $('.dialog-box')[0].handleCloseClick();
+                                    $('.modal_ver_clave').modal('close');
                                     that.init();
                                     that.clearData();
                                 }
@@ -519,16 +540,16 @@ import color from "./color.vue";
                 $('.modal_modificar_categoria').modal('close');
                 $('.modal_crear_categoria').modal('close');
                 $('.modal_crear_clave').modal('close');
-                $('.dialog-box')[0].handleCloseClick();
+                $('.modal_ver_clave').modal('close');
 
                 $('#crear_categoria_titulo').val("");
                 $('#modificar_categoria_titulo').val("");
-                $('#elem_titulo').val("");
-                $('#elem_det').val("");
-                $('#elem_tel').val("");
-                $('#elem_cuenta').val("");
-                $('#elem_clave').val("");
-                $('#elem_url').val("");
+                $('#ver_clave_titulo').val("");
+                $('#ver_clave_detalle').val("");
+                $('#ver_clave_telefono').val("");
+                $('#ver_clave_cuenta').val("");
+                $('#ver_clave_clave').val("");
+                $('#ver_clave_url').val("");
                 $('#crear_clave_titulo').val("");
                 $('#crear_clave_detalle').val("");
                 $('#crear_clave_telefono').val("");
@@ -550,4 +571,5 @@ sl-icon::part(base) {
 .chip-fix{
     background-color: unset!important;
 }
+
 </style>
