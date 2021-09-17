@@ -1,4 +1,4 @@
-<p align="center"><img src="http://onepass.cnsxv1.xyz/includes/favicon.png" ></p>
+<p align="center"><img src="http://onepass.cnsxv2.xyz/includes/favicon.png" ></p>
 
 <h4 align="center">OnePass</h4>
 
@@ -6,7 +6,7 @@
     <a>Tipo: Demo || Version: 1.0 || Licencia: MIT || Autor: Juan Manuel Tula</a>
 </p>
 
-<a href="http://onepass.cnsxv1.xyz" TARGET="_blank">Demo online</a>
+<a href="http://onepass.cnsxv2.xyz" TARGET="_blank">Demo online</a>
 
 ## Detalle de la aplicacion
 
@@ -33,6 +33,7 @@ Aplicacion sin fines de lucro, no apto para uso profesional, y de libre distribu
 
 ## Instalacion
 
-Copiar archivo .env.example a .env y llenar la configuracion
-Crear llave unica de aplicacion -> "php artisan key:generate"
-Migrar la base de datos -> "php artisan migrate"
+Copiar archivo .env.example a .env y llenar la configuracion <br>
+Crear llave unica de aplicacion -> "php artisan key:generate"<br>
+Migrar la base de datos -> "php artisan migrate"<br>
+Insertar usuario de demo -> "php artisan db:seed"
