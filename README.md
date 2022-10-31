@@ -1,4 +1,4 @@
-<p align="center"><img src="http://onepass.cnsxv2.xyz/includes/favicon.png" ></p>
+<p align="center"><img src="http://onepass.cnsxv3.online/includes/favicon.png" ></p>
 
 <h4 align="center">OnePass</h4>
 
@@ -6,7 +6,7 @@
     <a>Tipo: Demo || Version: 1.0 || Licencia: MIT || Autor: Juan Manuel Tula</a>
 </p>
 
-<a href="http://onepass.cnsxv2.xyz" TARGET="_blank">Demo online</a>
+<a href="http://onepass.cnsxv3.online/" TARGET="_blank">Demo online</a>
 
 ## Detalle de la aplicacion
 
